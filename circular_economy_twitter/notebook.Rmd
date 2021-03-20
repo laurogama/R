@@ -1,0 +1,68 @@
+---
+title: "Circular economy on Twitter"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+Loading the dependencies
+```{r}
+library(rtweet)
+# plotting and pipes - tidyverse!
+library(ggplot2)
+library(dplyr)
+# text mining library
+library(tidytext)
+```
+
+
+Last 10 tweets with hashtag #Circulareconomy
+
+```{r}
+## search for 500 tweets using the #rstats hashtag
+hash_ce_tweets <- search_tweets(q = "#circulareconomy #circularity",
+n = 500, include_rts = FALSE)
+length(hash_ce_tweets)
+head(hash_ce_tweets, n=10)
+```
+Who is twitting about CircularEconomy
+```{r}
+users <- search_users("#circulareconomy",
+n = 500)
+length(unique(users$location))
+users %>%
+count(location, sort = TRUE) %>%
+mutate(location = reorder(location, n)) %>%
+na.omit() %>%
+top_n(20) %>%
+ggplot(aes(x = location, y = n)) +
+geom_col() +
+coord_flip() +
+labs(x = "Count",
+y = "Location",
+title = "Where Twitter users are from - unique locations ")
+```
+```{r}
+## search for 500 tweets using the string 'circular economy'
+ce_tweets <- search_tweets(q = "circular+economy",
+n = 500, include_rts = FALSE)
+length(ce_tweets)
+head(ce_tweets, n=10)
+```
+
+
+```{r}
+ce_tweets %>%
+count(user_id, sort = TRUE) %>%
+mutate(user_id = reorder(user_id, n)) %>%
+na.omit() %>%
+top_n(20) %>%
+ggplot(aes(x = user_id, y = n)) +
+geom_col() +
+coord_flip() +
+labs(x = "Count",
+y = "User",
+title = "Twitter users most active")
+```
+
+
